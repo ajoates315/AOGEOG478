@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<base target="_top">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>Amanda's First WebMap</title>
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		.leaflet-container {
+			height: 400px;
+			width: 600px;
+			max-width: 100%;
+			max-height: 100%;
+		}
+	</style>
+
+	
+</head>
+<body>
+
+
+
+<div id="map" style="width: 600px; height: 400px;"></div>
+<script>
+
+	const map = L.map('map').setView([30.6102, -96.3417], 14); // Texas A&M University coordinates
+
+	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+
+	const circle = L.circle([30.6098111055376, -96.34120708689383], {
+		color: 'red',
+		fillColor: '#f03',
+		fillOpacity: 0.5,
+		radius: 200
+	}).addTo(map).bindPopup('Kyle Field');
+
+    var LeafIcon = L.Icon.extend({
+		options: {
+			iconSize:     [50, 60],
+			shadowSize:   [50, 64],
+			iconAnchor:   [22, 94],
+			shadowAnchor: [4, 62],
+			popupAnchor:  [-3, -76]
+		}
+	});
+
+	var greenIcon = new LeafIcon({iconUrl: 'https://w7.pngwing.com/pngs/71/53/png-transparent-sun-illustration-cartoon-sunlight-cartoon-sun-smiley-miscellaneous-cartoon-character-orange.png'}),
+		redIcon = new LeafIcon({iconUrl: 'https://w7.pngwing.com/pngs/54/73/png-transparent-cartoon-island-cartoon-cartoon-character-beach-happy-birthday-vector-images.png'});
+
+	L.marker([30.617167, -96.338661], {icon: greenIcon}).bindPopup("I am the O&M Building.").addTo(map);
+	L.marker([30.622647, -96.328446], {icon: redIcon}).bindPopup("I am the Academic Building.").addTo(map);
+
+    const popup = L.popup()
+		.setLatLng([30.6102, -96.3417])
+		.setContent('I am kyle field.')
+		.openOn(map);
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent(`You clicked the map at ${e.latlng.toString()}`)
+			.openOn(map);
+	}
+
+	map.on('click', onMapClick);
+
+</script>
+
+
+
+</body>
+</html>
