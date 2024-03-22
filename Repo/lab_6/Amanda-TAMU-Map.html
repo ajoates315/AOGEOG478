@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>GeoJSON tutorial - Leaflet</title>
+    
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        .leaflet-container {
+            height: 400px;
+            width: 600px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script src="data.js" type="text/javascript"></script>
+
+<script>
+    const map = L.map('map').setView([30.61617999396414, -96.34167200908276], 17);
+
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    // Define a custom control for displaying hover message
+    const hoverMessageControl = L.control();
+
+    // Define the contents of the control
+    hoverMessageControl.onAdd = function(map) {
+        this._div = L.DomUtil.create('div', 'info'); // Create a div element with the class 'info'
+        this.update(); // Call the update function to populate the content initially
+        return this._div;
+    };
+
+    // Update the content of the control based on hovered feature
+    hoverMessageControl.update = function(message) {
+        this._div.innerHTML = message ? message : ''; // Display the message or default message
+    };
+
+    // Add the control to the map
+    hoverMessageControl.addTo(map);
+
+    // Function to handle mouseover events on coorsLayer
+    function showHoverMessage(e) {
+        hoverMessageControl.update('Hovering over BOLTON HALL'); // Update the hover message
+    }
+
+    // Function to handle mouseout events on coorsLayer
+    function hideHoverMessage() {
+        hoverMessageControl.update(); // Reset the hover message
+    }
+
+    // Define the Coors Layer
+    const coorsLayer = L.geoJSON(coorsField, {
+        style: function (feature) {
+            return feature.properties.style; // Use the style defined in the properties
+        },
+        onEachFeature: function (feature, layer) {
+            let originalStyle; // Variable to store the original style
+            
+            // Store the original style when mouse enters
+            layer.on('mouseover', function () {
+                originalStyle = feature.properties.style; // Store the original style
+                layer.setStyle({ fillColor: 'red', fillOpacity: 0.5 }); // Change fill color and opacity
+                showHoverMessage(); // Show hover message
+            });
+            
+            // Restore original style when mouse exits
+            layer.on('mouseout', function () {
+                if (originalStyle) { // Check if originalStyle is defined
+                    layer.setStyle(originalStyle); // Restore original style
+                }
+                hideHoverMessage(); // Hide hover message
+            });
+
+            // Zoom to the building on click
+            layer.on('click', function () {
+                map.fitBounds(layer.getBounds()); // Zoom to the bounds of the clicked building
+            });
+        }
+    }).addTo(map);
+</script>
+
+</body>
+</html>
