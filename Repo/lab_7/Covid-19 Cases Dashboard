@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Covid-19 Cases Dashboard</title>
+    require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/WebMap",
+    "esri/config",
+    "esri/portal/Portal",
+    "esri/portal/PortalItem"
+  ], function(Map, MapView, WebMap, esriConfig, Portal, PortalItem) {
+    
+    // Set the ArcGIS Online portal URL
+    esriConfig.portalUrl = "https://www.arcgis.com/sharing/rest";
+    
+    // Authenticate with your ArcGIS Online account
+    var portal = new Portal();
+    portal.authMode = "immediate";
+    portal.load().then(function() {
+      
+      // Extract the dashboard item ID from the link
+      var dashboardLink = "https://tamu.maps.arcgis.com/apps/dashboards/d50a4e3d4a864f3cb17463ffb0aeeab6";
+      var dashboardItemId = dashboardLink.split("/").pop();
+      
+      // Get the dashboard item
+      var dashboardItem = new PortalItem(portal, {
+        id: dashboardItemId
+      });
+      
+      // Get the web map
+      var webMapId = "https://tamu.maps.arcgis.com/apps/dashboards/d50a4e3d4a864f3cb17463ffb0aeeab6";
+      var webMap = new WebMap({
+        portalItem: {
+          id: webMapId
+        }
+      });
+      
+      // Add the dashboard to the web map
+      webMap.add(dashboardItem);
+      
+      // Create a map view
+      var view = new MapView({
+        map: webMap,
+        container: "viewDiv"
+      });
+      
+    });
+  });
+  </head>
+  <body></body>
+</html>
